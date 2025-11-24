@@ -1,0 +1,387 @@
+{
+  "visual": [
+
+    {
+      "id": 1,
+      "topic": "PR",
+      "title": "PR #1 - Medición clásica en DII",
+      "question": "medir PR en un ritmo sinusal normal",
+      "image": "ej_1.png",
+      "corrected_image": "ej_1_marked.png",
+      "instruction": "Marca el inicio de la onda P y el inicio del QRS en el MISMO latido.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 280,
+      "tolerance_ms": 20,
+      "valid_zone_pairs": [
+      { "x_min": -20, "x_max": 60 }, 
+        { "x_min": 100,  "x_max": 170 },
+        { "x_min": 210, "x_max": 295 },
+        { "x_min": 320, "x_max": 400 },
+        { "x_min": 440, "x_max": 510 }
+      ]
+    },
+    {
+      "id": 2,
+      "topic": "PR",
+      "title": "PR #2 ",
+      "image": "ej_2.png",
+      "corrected_image": "ej_2_marked.png",
+      "instruction": "Marca el inicio y el final del intervalo PR.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 80,
+      "tolerance_ms": 20,
+      "valid_zone": { "x_min": -1, "x_max": 600 }
+    },
+
+  
+    {
+      "id": 4,
+      "topic": "FC",
+      "title": "Frecuencia #1 ",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca el primer y ultimo pico del QRS que vayas a medir  E indica cual es la frecuencia cardíaca promedio.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 800,  
+      "tolerance_ms": 50,
+      "valid_zone": { "x_min": 10, "x_max": 500 }
+    },
+    {
+      "id": 5,
+      "topic": "FC",
+      "title": "Frecuencia #2 - Taquicardia sinusal",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca dos complejos R consecutivos.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 500,
+      "tolerance_ms": 40,
+      "valid_zone": { "x_min": 10, "x_max": 500 }
+    },
+    {
+      "id": 6,
+      "topic": "FC",
+      "title": "Frecuencia #3 - Bradicardia sinusal",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca dos R consecutivos para calcular FC.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 1200,
+      "tolerance_ms": 70,
+      "valid_zone": { "x_min": 10, "x_max": 600 }
+    },
+
+    {
+      "id": 7,
+      "topic": "QRS",
+      "title": "QRS #1 - Duración normal",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca el inicio y final del QRS.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 90,
+      "tolerance_ms": 10,
+      "valid_zone": { "x_min": 20, "x_max": 200 }
+    },
+    {
+      "id": 8,
+      "topic": "QRS",
+      "title": "QRS #2 - Bloqueo de rama derecha",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca los límites del complejo QRS.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 150,
+      "tolerance_ms": 15,
+      "valid_zone": { "x_min": 20, "x_max": 300 }
+    },
+    {
+      "id": 9,
+      "topic": "QRS",
+      "title": "QRS #3 - QRS ancho por taquicardia ventricular",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca el inicio y el final del QRS.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 180,
+      "tolerance_ms": 20,
+      "valid_zone": { "x_min": 20, "x_max": 300 }
+    },
+
+    {
+      "id": 10,
+      "topic": "QT",
+      "title": "QT #1 - QT normal",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca el inicio del QRS y final de la T.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 390,
+      "tolerance_ms": 25,
+      "valid_zone": { "x_min": 20, "x_max": 600 }
+    },
+    {
+      "id": 11,
+      "topic": "QT",
+      "title": "QT #2 - QT prolongado",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca inicio QRS y final de T.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 480,
+      "tolerance_ms": 25,
+      "valid_zone": { "x_min": 20, "x_max": 700 }
+    },
+    {
+      "id": 12,
+      "topic": "QT",
+      "title": "QT #3 - QT corto",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca el inicio del QRS y el final de la onda T.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 300,
+      "tolerance_ms": 25,
+      "valid_zone": { "x_min": 20, "x_max": 500 }
+    },
+
+    {
+      "id": 13,
+      "topic": "EJE_QRS",
+      "title": "Eje QRS #1 - Normal",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Selecciona la deflexión neta del QRS en DI y aVF.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 45,
+      "tolerance_ms": 15,
+      "valid_zone": { "x_min": 20, "x_max": 400 }
+    },
+    {
+      "id": 14,
+      "topic": "EJE_QRS",
+      "title": "Eje QRS #2 - Desviación a la izquierda",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Determina el eje usando DI y aVF.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 45,
+      "tolerance_ms": 15,
+      "valid_zone": { "x_min": 20, "x_max": 500 }
+    },
+    {
+      "id": 15,
+      "topic": "EJE_QRS",
+      "title": "Eje QRS #3 - Desviación derecha",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Determina el eje frontal del QRS.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 110,
+      "tolerance_ms": 15,
+      "valid_zone": { "x_min": 20, "x_max": 500 }
+    },
+
+    {
+      "id": 16,
+      "topic": "EJE_T",
+      "title": "Eje T #1 - Normal",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Determina el eje de T usando DI y aVF.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 20,
+      "tolerance_ms": 15,
+      "valid_zone": { "x_min": 20, "x_max": 500 }
+    },
+    {
+      "id": 17,
+      "topic": "EJE_T",
+      "title": "Eje T #2 - Invertido con desviación izquierda",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Mide la deflexión de T en DI y aVF.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": -30,
+      "tolerance_ms": 15,
+      "valid_zone": { "x_min": 20, "x_max": 500 }
+    },
+    {
+      "id": 18,
+      "topic": "EJE_T",
+      "title": "Eje T #3 - Discordancia secundaria",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Determina el eje de T.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": -70,
+      "tolerance_ms": 20,
+      "valid_zone": { "x_min": 20, "x_max": 500 }
+    },
+
+
+    {
+      "id": 19,
+      "topic": "EJE_P",
+      "title": "Eje P #1 - Normal (0 a +75°)",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca la deflexión neta de P en DI y aVF.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 50,
+      "tolerance_ms": 15,
+      "valid_zone": { "x_min": 20, "x_max": 500 }
+    },
+    {
+      "id": 20,
+      "topic": "EJE_P",
+      "title": "Eje P #2 - Eje superior (negativo en aVF)",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Selecciona la deflexión de P.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": -10,
+      "tolerance_ms": 15,
+      "valid_zone": { "x_min": 20, "x_max": 500 }
+    },
+    {
+      "id": 21,
+      "topic": "EJE_P",
+      "title": "Eje P #3 - P pulmonale (alta en inferior)",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Determina el eje frontal de la onda P.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 70,
+      "tolerance_ms": 15,
+      "valid_zone": { "x_min": 20, "x_max": 500 }
+    },
+
+   
+    {
+      "id": 22,
+      "topic": "TECNICOS",
+      "title": "Técnicos #1 - Línea de base inestable",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Identifica el segmento con baseline wander.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 200,
+      "tolerance_ms": 40,
+      "valid_zone": { "x_min": 10, "x_max": 600 }
+    },
+    {
+      "id": 23,
+      "topic": "TECNICOS",
+      "title": "Técnicos #2 - Dextrocardia (P negativa en DI)",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca el inicio y final de la onda P en DI.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 100,
+      "tolerance_ms": 20,
+      "valid_zone": { "x_min": 10, "x_max": 400 }
+    },
+    {
+      "id": 24,
+      "topic": "TECNICOS",
+      "title": "Técnicos #3 - Verificar calibración estándar (10 mm/mV)",
+      "image": "ekg_sample.png",
+      "corrected_image": "ekg_sample_marked.png",
+      "instruction": "Marca el inicio y final del trazo de calibración.",
+      "ms_per_pixel": 1.6,
+      "correct_ms": 100,
+      "tolerance_ms": 20,
+      "valid_zone": { "x_min": 10, "x_max": 300 }
+    }
+  ],
+
+  "multiple_choice": [
+    
+  {
+    "id": 101,
+    "question": "¿Qué representa la onda T en el ECG?",
+    "options": {
+      "Despolarización auricular": "Incorrecto. La despolarización auricular corresponde a la onda P.",
+      "Despolarización ventricular": "Incorrecto. La despolarización del ventrículo corresponde al complejo QRS.",
+      "Repolarización ventricular": "Correcto. La onda T representa la repolarización de los ventrículos.",
+      "Repolarización auricular": "Incorrecto. La repolarización auricular existe, pero está oculta dentro del QRS."
+    },
+    "correct_answer": "Repolarización ventricular"
+  },
+
+  {
+    "id": 102,
+    "question": "Un paciente de 70 años presenta mareo y bradicardia. En el ECG se observa onda P constante pero los complejos QRS aparecen de forma súbita ausentes, sin alargamiento progresivo del PR. ¿Cuál es el diagnóstico más probable?",
+    "options": {
+      "Bloqueo AV de primer grado": "Incorrecto. En el bloqueo AV de primer grado solo se prolonga el PR, pero no hay QRS perdidos.",
+      "Mobitz I (Wenckebach)": "Incorrecto. Wenckebach presenta alargamiento progresivo del PR antes de la ausencia del QRS, lo cual NO ocurre aquí.",
+      "Mobitz II": "Correcto. Mobitz II muestra ondas P constantes con QRS que fallan bruscamente sin cambios previos del PR.",
+      "Bloqueo AV completo": "Incorrecto. En el bloqueo completo no existe relación entre ondas P y QRS (disociación AV)."
+    },
+    "correct_answer": "Mobitz II"
+  },
+
+  {
+    "id": 103,
+    "question": "En un ECG se observa taquicardia regular a 180 lpm, QRS estrecho, con ondas P ocultas inmediatamente después del QRS. ¿Cuál es el diagnóstico más probable?",
+    "options": {
+      "Taquicardia sinusal": "Incorrecto. La taquicardia sinusal muestra ondas P normales antes del QRS y rara vez supera 160–170 lpm.",
+      "Fibrilación auricular": "Incorrecto. La FA es irregular; este ritmo es completamente regular.",
+      "Taquicardia por reentrada nodal (AVNRT)": "Correcto. AVNRT clásica: QRS estrecho, taquicardia rápida y regular, ondas P retrógradas que quedan ocultas.",
+      "Taquicardia ventricular": "Incorrecto. La TV muestra QRS ancho, no estrecho."
+    },
+    "correct_answer": "Taquicardia por reentrada nodal (AVNRT)"
+  },
+
+  {
+    "id": 104,
+    "question": "En un paciente con dolor torácico, el ECG muestra elevación del ST >2 mm en V2–V3 y >1 mm en derivaciones contiguas. ¿Cuál es la causa fisiopatológica más probable?",
+    "options": {
+      "Subendocardial ischemia": "Incorrecto. La isquemia subendocárdica genera depresión del ST, no elevación.",
+      "Corriente de lesión transmural": "Correcto. La elevación del ST indica lesión transmural del miocardio, típica del infarto con elevación del ST (STEMI).",
+      "Hipertrofia ventricular izquierda": "Incorrecto. Puede causar pseudo-elevación del ST por repolarización anormal, pero NO con patrón típico de STEMI.",
+      "Pericarditis viral": "Incorrecto. La pericarditis causa elevación difusa del ST, no localizada en territorios vasculares."
+    },
+    "correct_answer": "Corriente de lesión transmural"
+  },
+
+  {
+    "id": 105,
+    "question": "Un ECG muestra QRS ancho (>120 ms), eje desviado a la izquierda, y un patrón en M en V6. ¿Cuál es el diagnóstico más probable?",
+    "options": {
+      "Bloqueo de rama derecha": "Incorrecto. El BRD muestra patrón rsR' en V1 y S ancha en V6.",
+      "Bloqueo de rama izquierda": "Correcto. El BRI presenta QRS ancho, eje izquierdo y patrón en M o muesca en derivaciones laterales (V5–V6).",
+      "Taquicardia ventricular": "Incorrecto. La TV puede presentar QRS ancho, pero generalmente tiene disociación AV, concordancia o capturas.",
+      "Hipercalemia severa": "Incorrecto. La hipercalemia ensancha el QRS, pero no crea el patrón típico en M."
+    },
+    "correct_answer": "Bloqueo de rama izquierda"
+  }
+
+
+  ],
+
+  "open": [
+    {
+      "id": 201,
+      "image": "ekg_sample.png",
+      "question": "Describe el diagnóstico más probable del ritmo.",
+      "correct_diagnosis": "Fibrilación Auricular",
+      "key_features": "Ausencia de ondas P, RR irregular, QRS estrechos."
+    },
+    {
+      "id": 202,
+      "image": "ekg_sample.png",
+      "question": "Identifica la arritmia presente en este ECG.",
+      "correct_diagnosis": "Taquicardia Ventricular",
+      "key_features": "QRS ancho, ritmo regular, frecuencia >100 bpm."
+    },
+    {
+      "id": 203,
+      "image": "ekg_sample.png",
+      "question": "¿Cuál es la interpretación del segmento ST en este ECG?",
+      "correct_diagnosis": "Elevación del ST",
+      "key_features": "Elevación >1 mm en dos derivaciones contiguas."
+    }
+  ]
+}
