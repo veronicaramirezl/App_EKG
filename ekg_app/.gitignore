@@ -1,0 +1,15 @@
+# --- Entornos Virtuales (Virtual Environments) ---
+venv/
+.venv/
+env/
+__pycache__/
+
+# --- Distribución y Builds ---
+.dist/
+dist/
+build/
+*.egg-info/
+
+# --- Archivos de sistema y logs ---
+.DS_Store
+*.log
