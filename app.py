@@ -62,7 +62,7 @@ if "progress" not in st.session_state:
 
 with st.sidebar:
     logo = Image.open("assets/logo/logo.png")
-    st.image(logo, use_column_width=True)
+    st.image(logo, use_container_width=True)
 
     # Información del usuario
     user = st.session_state["user_data"]

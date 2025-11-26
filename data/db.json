@@ -62,7 +62,7 @@
       "instruction": "Marca el primer y ultimo pico del QRS que vayas a medir, e indica cual es la frecuencia cardíaca promedio.",
       "ms_per_pixel": 1.6,
       "correct_ms": 130,
-      "tolerance_ms": 40,
+      "tolerance_ms": 10,
       "valid_zone": { "x_min": -1, "x_max": 600 }
     },
 

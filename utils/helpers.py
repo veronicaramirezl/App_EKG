@@ -45,7 +45,7 @@ Sé específico sobre la ubicación de los puntos en el complejo ECG."""
     except Exception as e:
         return f"Error con Gemini: {str(e)}"
     
-def get_ai_feedback(api_key, system_prompt, user_input, model="gemini"):
+def get_ai_feedback(api_key, system_prompt, user_input, instruction, context, model="gemini"):
 
     if not api_key:
         return "⚠️ Necesitas ingresar tu API Key."
@@ -56,7 +56,7 @@ def get_ai_feedback(api_key, system_prompt, user_input, model="gemini"):
             genai.configure(api_key=api_key)
             llm = genai.GenerativeModel("gemini-2.5-flash")
             response = llm.generate_content(
-                system_prompt + "\n\n" + user_input
+                system_prompt + "\n\n" + user_input + "\n\n" + instruction + "\n\n" + context
             )
             return response.text
         except Exception as e:

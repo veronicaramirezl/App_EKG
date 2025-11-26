@@ -1,25 +1,16 @@
 import streamlit as st
-from streamlit_drawable_canvas import st_canvas
-from utils.helpers import load_image, get_ai_feedback, get_ai_visual_feedback
+import streamlit.components.v1 as components
+from utils.helpers import load_image, get_ai_feedback
 from PIL import Image
 import io
 import base64
 
 # ---------- UTILS ----------
 def pil_to_base64(img):
-    """Convierte PIL Image a base64 para enviar a la IA."""
+    """Convierte PIL Image a base64 para mostrar en HTML."""
     buffered = io.BytesIO()
     img.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode()
-
-def combine_canvas_with_image(background_img, canvas_data):
-    """Combina la imagen de fondo con lo dibujado en el canvas."""
-    if canvas_data is None or canvas_data.image_data is None:
-        return background_img
-    canvas_img = Image.fromarray(canvas_data.image_data.astype('uint8'), 'RGBA')
-    combined = background_img.copy().convert('RGBA')
-    combined.paste(canvas_img, (0, 0), canvas_img)
-    return combined
 
 def register_result(q, result):
     """Registra el resultado del estudiante."""
@@ -38,12 +29,13 @@ def register_result(q, result):
 
 def reset_question_state(qid):
     """Limpia el estado de una pregunta."""
-    keys = [f"canvas_{qid}", f"ai_feedback_{qid}", f"user_ms_{qid}",
+    keys = [f"ai_feedback_{qid}", f"user_ms_{qid}",
             f"attempt_failed_{qid}", f"solved_success_{qid}", 
-            f"second_ms_value_{qid}", f"screenshot_{qid}",
-            f"first_expl_sent_{qid}", f"logic_{qid}", f"failed_second_attempt_{qid}"]
-    for k in list(st.session_state.keys()):
-        if any(key in k for key in keys):
+            f"second_ms_value_{qid}", f"first_expl_sent_{qid}", 
+            f"logic_{qid}", f"failed_second_attempt_{qid}",
+            f"show_success_message_{qid}", f"show_error_message_{qid}"]
+    for k in keys:
+        if k in st.session_state:
             del st.session_state[k]
 
 def find_next_index_same_topic(visuals, current_idx):
@@ -62,9 +54,188 @@ def find_next_index_next_topic(visuals, current_idx):
             return i
     return None
 
+def create_canvas_component(img_base64, width, height, locked=False):
+    """Crea un componente HTML con canvas centrado, botón visible y selección de herramienta con líneas dinámicas."""
+    cursor_style = "not-allowed" if locked else "crosshair"
+    pointer_events = "none" if locked else "auto"
+    
+    html_code = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {{
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }}
+            #canvasContainer {{
+                position: relative;
+                width: {width}px;
+                display: inline-block;
+            }}
+            #bgImage {{
+                display: block;
+                width: 100%;
+                height: auto;
+                pointer-events: none;
+            }}
+            #drawCanvas {{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: {width}px;
+                height: {height}px;
+                cursor: {cursor_style};
+                pointer-events: {pointer_events};
+            }}
+            #controls {{
+                display: flex;
+                justify-content: flex-start;
+                margin-top: 8px;
+                gap: 10px;
+            }}
+            #toolSelect, #clearBtn {{
+                padding: 6px 12px;
+                font-size: 14px;
+                border-radius: 4px;
+                cursor: pointer;
+            }}
+            #clearBtn {{
+                background: #ff4444;
+                color: white;
+                border: none;
+            }}
+        </style>
+    </head>
+    <body>
+        <div id="canvasContainer">
+            <img id="bgImage" src="data:image/png;base64,{img_base64}" width="{width}" height="{height}">
+            <canvas id="drawCanvas" width="{width}" height="{height}"></canvas>
+            <div id="controls">
+                {"<select id='toolSelect'><option value='circle'>Círculo</option><option value='line'>Línea</option></select>" if not locked else ""}
+                {"<button id='clearBtn'>🗑️ Limpiar marcas</button>" if not locked else ""}
+            </div>
+        </div>
+        
+        <script>
+            const canvas = document.getElementById('drawCanvas');
+            const ctx = canvas.getContext('2d');
+            const locked = {str(locked).lower()};
+            let circles = [];
+            let lines = [];
+            let currentTool = "circle";
+            let lineStart = null;
+
+            const toolSelect = document.getElementById('toolSelect');
+            toolSelect?.addEventListener('change', (e) => {{
+                currentTool = e.target.value;
+                lineStart = null;
+            }});
+
+            function drawCircle(x, y) {{
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+                ctx.fill();
+                ctx.strokeStyle = '#FF0000';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }}
+
+            function drawLines() {{
+                ctx.strokeStyle = '#FF0000';
+                ctx.lineWidth = 3;
+                lines.forEach(line => {{
+                    ctx.beginPath();
+                    ctx.moveTo(line.x1, line.y1);
+                    ctx.lineTo(line.x2, line.y2);
+                    ctx.stroke();
+                }});
+            }}
+
+            function redrawAll(tempLine=null) {{
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawLines();
+                circles.forEach(c => drawCircle(c.x, c.y));
+                if(tempLine) {{
+                    ctx.beginPath();
+                    ctx.moveTo(tempLine.x1, tempLine.y1);
+                    ctx.lineTo(tempLine.x2, tempLine.y2);
+                    ctx.strokeStyle = '#FF0000';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }}
+            }}
+
+            function getCanvasOffsetScale() {{
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                return {{ rect, scaleX, scaleY }};
+            }}
+
+            if (!locked) {{
+                function handlePointer(x, y) {{
+                    if(currentTool === "circle") {{
+                        circles.push({{x, y}});
+                    }} else if(currentTool === "line") {{
+                        if(lineStart === null) {{
+                            lineStart = {{x, y}};
+                        }} else {{
+                            lines.push({{x1: lineStart.x, y1: lineStart.y, x2: x, y2: y}});
+                            lineStart = null;
+                        }}
+                    }}
+                    redrawAll();
+                }}
+
+                canvas.addEventListener('mousedown', e => {{
+                    const {{ rect, scaleX, scaleY }} = getCanvasOffsetScale();
+                    const x = (e.clientX - rect.left) * scaleX;
+                    const y = (e.clientY - rect.top) * scaleY;
+                    handlePointer(x, y);
+                }});
+
+                canvas.addEventListener('mousemove', e => {{
+                    if(currentTool === "line" && lineStart) {{
+                        const {{ rect, scaleX, scaleY }} = getCanvasOffsetScale();
+                        const x = (e.clientX - rect.left) * scaleX;
+                        const y = (e.clientY - rect.top) * scaleY;
+                        redrawAll({{x1: lineStart.x, y1: lineStart.y, x2: x, y2: y}});
+                    }}
+                }});
+
+                canvas.addEventListener('touchstart', e => {{
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const {{ rect, scaleX, scaleY }} = getCanvasOffsetScale();
+                    const x = (touch.clientX - rect.left) * scaleX;
+                    const y = (touch.clientY - rect.top) * scaleY;
+                    handlePointer(x, y);
+                }});
+
+                const clearBtn = document.getElementById('clearBtn');
+                clearBtn?.addEventListener('click', () => {{
+                    circles = [];
+                    lines = [];
+                    lineStart = null;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }});
+            }}
+        </script>
+    </body>
+    </html>
+    """
+    return html_code
+
 # ---------- RENDER MODULE ----------
 def render(data_db, api_key):
-    """Módulo visual con dibujo libre y revisión por IA."""
+    """Módulo visual con dibujo libre usando HTML Canvas puro."""
     
     visuals = data_db.get("visual", [])
     if len(visuals) == 0:
@@ -98,9 +269,9 @@ def render(data_db, api_key):
         st.markdown("<h1 style='text-align: center;'>Módulo de Medición de Intervalos en ECG</h1>", unsafe_allow_html=True)
         st.markdown("""
         **Instrucciones:**
-        1. Dibuja puntos/círculos en el ECG para marcar el inicio y fin del intervalo
+        1. Dibuja círculos en el ECG para marcar el inicio y fin del intervalo
         2. Escribe tu medición en milisegundos
-        3. La IA revisará visualmente tu trabajo y te dará feedback
+        3. La IA revisará tu explicación (NO la imagen) y te dará feedback
         """)
 
     st.header(f"📏 [{q.get('topic','')}] {q.get('title')}")
@@ -113,21 +284,15 @@ def render(data_db, api_key):
         st.stop()
 
     locked = st.session_state[f"solved_success_{qid}"]
-    drawing_mode = "transform" if locked else "circle"
+    
+    # Convertir imagen a base64
+    img_base64 = pil_to_base64(img)
+    
+    # Mostrar canvas HTML
+    canvas_html = create_canvas_component(img_base64, img.width, img.height, locked)
+    components.html(canvas_html, height=img.height + 60, scrolling=False)
 
-    # Canvas
-    canvas_result = st_canvas(
-        fill_color="rgba(255, 0, 0, 0.3)",
-        stroke_width=3,
-        stroke_color="#FF0000",
-        background_image=img,
-        update_streamlit=True,
-        height=img.height,
-        width=img.width,
-        drawing_mode=drawing_mode,
-        point_display_radius=10,
-        key=f"canvas_{qid}"
-    )
+    st.markdown("---")
 
     # Primer intento
     user_ms = st.number_input("¿Cuánto mide el intervalo (ms)?", min_value=0, max_value=2000, step=1, key=f"user_ms_{qid}")
@@ -147,42 +312,60 @@ def render(data_db, api_key):
             register_result(q, "failed_first_try")
             st.error("❌ Respuesta incorrecta. Intenta de nuevo.")
 
-    # Feedback IA después del primer intento fallido
+    # Feedback IA después del primer intento fallido (SOLO CON EXPLICACIÓN DE TEXTO)
     if st.session_state.get(f"attempt_failed_{qid}") and not st.session_state.get(f"first_expl_sent_{qid}"):
-        explanation = st.text_area("Intento fallido, explica como llegaste a la respuesta en tus palabras (ej. conté 3 cuadritos):", key=f"logic_input_{qid}")
-        if st.button("Enviar explicación (pedir feedback)", key=f"btn_explain_{qid}"):
+        st.markdown("---")
+        explanation = st.text_area(
+            "Explica cómo llegaste a tu respuesta (ej: conté 3 cuadritos grandes y cada uno mide 200ms):", 
+            key=f"logic_input_{qid}",
+            height=100
+        )
+        if st.button("Enviar explicación y pedir feedback", key=f"btn_explain_{qid}", type="secondary"):
             if not explanation.strip():
                 st.warning("Escribe tu explicación antes de pedir feedback.")
             else:
                 st.session_state[f"logic_{qid}"] = explanation
                 st.session_state[f"first_expl_sent_{qid}"] = True
                 
-                combined_img = combine_canvas_with_image(img, canvas_result)
-                img_base64 = pil_to_base64(combined_img)
-                st.session_state[f"screenshot_{qid}"] = combined_img
-
-                with st.spinner("🤖 La IA está revisando tu trabajo..."):
+                # IMPORTANTE: Solo enviamos la explicación de texto, NO la imagen
+                with st.spinner("🤖 La IA está revisando tu explicación..."):
                     try:
-                        ai_fb = get_ai_visual_feedback(
+                        # Aquí llamamos a una función simplificada que solo usa texto
+                        ai_fb = get_ai_feedback(
                             api_key=api_key,
-                            img_base64=img_base64,
-                            user_measurement=user_ms,
-                            correct_ms=q.get("correct_ms"),
-                            tolerance=q.get("tolerance_ms"),
                             instruction=q.get("instruction"),
-                            explanation=explanation
+                            user_input=explanation,
+                            system_prompt=f"""Tu eres un profesor experto en electrocardiografía. Revisa el ejercicio que le proponemos al estudiante. El mensaje debe ser conciso pero fácil de entender. Debes dirigirte al estudiante en segunda persona.
+
+                    El estudiante debe {q.get('instruction')}.
+
+                    Ha marcado puntos en la imagen y midió {user_ms} ms. El valor correcto es {q.get('correct_ms')} ms (tolerancia: ±{q.get('tolerance_ms')} ms).
+
+                    Su razonamiento para haberlo hecho así es el siguiente: {explanation}
+
+                    Analiza la imagen y, sin decir nunca la respuesta exacta, responde a las siguientes preguntas:
+                    - Si hay errores, explica QUÉ está mal y CÓMO corregirlo (sin dar la respuesta exacta). 
+                    - Dónde fue el error? Tal vez la marca no fue adecuada, tal vez sí fue adecuada pero la medición fue incorrecta, etc.
+
+                    Sé específico sobre la ubicación de los puntos en el complejo ECG.
+                    """,
+                            context=f"El estudiante midió {user_ms} ms pero la respuesta correcta es {q.get('correct_ms')} ms."
                         )
                         st.session_state[f"ai_feedback_{qid}"] = ai_fb
                     except Exception as e:
                         st.session_state[f"ai_feedback_{qid}"] = f"Error llamando a la IA: {e}"
-                st.rerun()
+
+                    st.rerun()
+
 
     # Segundo intento
     if st.session_state.get(f"first_expl_sent_{qid}"):
-        st.markdown("### Retroalimentación docente (IA)")
-        st.write(st.session_state.get(f"ai_feedback_{qid}", "Sin feedback disponible."))
-        st.image(st.session_state.get(f"screenshot_{qid}"), caption="Tu trabajo", use_column_width=True)
-        st.info("Segundo intento habilitado. Ingresa tu nuevo valor.")
+        st.markdown("---")
+        st.markdown("### 💡 Retroalimentación del profesor (IA)")
+        st.info(st.session_state.get(f"ai_feedback_{qid}", "Sin feedback disponible."))
+        
+        st.markdown("### 🔄 Segundo intento")
+        st.write("Basándote en el feedback, ingresa tu nueva medición:")
 
         second_ms = st.number_input(
             "Segundo intento (ms)",
@@ -194,139 +377,89 @@ def render(data_db, api_key):
         )
         st.session_state[f"second_ms_value_{qid}"] = second_ms
 
-        send_second = st.button("Enviar segundo intento", key=f"send_second_{qid}", type="primary")
-        if send_second:
+        if st.button("Enviar segundo intento", key=f"send_second_{qid}", type="primary"):
             if abs(second_ms - q.get("correct_ms", 0)) <= q.get("tolerance_ms", 5):
-                # Segundo intento correcto
                 register_result(q, "correct_second_try")
                 st.session_state[f"solved_success_{qid}"] = True
-                st.session_state[f"show_success_message_{qid}"] = True  # Nueva bandera
+                st.session_state[f"show_success_message_{qid}"] = True
             else:
-                # Segundo intento incorrecto
                 register_result(q, "failed_second_try")
                 st.session_state[f"failed_second_attempt_{qid}"] = True
-                st.session_state[f"show_error_message_{qid}"] = True  # Nueva bandera
-                
+                st.session_state[f"show_error_message_{qid}"] = True
             st.rerun()
 
-        # Mostrar mensajes después del rerun
+        # Mensajes post-segundo intento
         if st.session_state.get(f"show_success_message_{qid}"):
             st.success(f"✅ ¡Excelente! Lo resolviste correctamente. El valor era {q.get('correct_ms')} ms.")
-            # Opcional: limpiar el mensaje después de mostrarlo
-            # st.session_state[f"show_success_message_{qid}"] = False
 
         if st.session_state.get(f"show_error_message_{qid}"):
             st.error(f"❌ Segundo intento incorrecto. Respuesta correcta: {q.get('correct_ms')} ms.")
             
-            # Mostrar imagen corregida si existe en los datos
             corrected_image_path = q.get("corrected_image")
             if corrected_image_path:
                 try:
                     corrected_img = load_image(corrected_image_path)
                     if corrected_img:
-                        st.image(corrected_img, caption="📋 Imagen de referencia con la solución correcta", use_column_width=True)
-                    else:
-                        st.warning("No se pudo cargar la imagen corregida de referencia.")
-                except Exception as e:
-                    st.warning(f"No se pudo mostrar la imagen corregida: {e}")
-            else:
-                st.info("💡 Revisa tus marcas en el ECG. Asegúrate de medir desde el inicio hasta el final del intervalo correctamente.")
-            
-            # Opcional: limpiar el mensaje después de mostrarlo
-            # st.session_state[f"show_error_message_{qid}"] = False
+                        st.image(corrected_img, caption="📋 Imagen de referencia con la solución correcta", use_container_width=True)
+                except:
+                    pass
 
-
-
-
-    # Botón único de continuar (solo aparece si ya resolvió o falló segundo intento)
+    # Botones de navegación
     if st.session_state.get(f"solved_success_{qid}") or st.session_state.get(f"failed_second_attempt_{qid}"):
         st.markdown("---")
         st.subheader("¿Qué quieres hacer ahora?")
         
-        # Determinar opciones disponibles
         same_topic_available = find_next_index_same_topic(visuals, current_idx) is not None
         next_topic_available = find_next_index_next_topic(visuals, current_idx) is not None
         
-        # Si acertó a la primera, ofrecer cambiar de tema
-        if st.session_state.get(f"solved_success_{qid}") and "correct_first_try" in [attempt.get("result") for attempt in st.session_state["progress"]["attempts"] if attempt.get("id") == qid]:
-            
+        # Si acertó a la primera
+        attempts = [a for a in st.session_state["progress"]["attempts"] if a.get("id") == qid]
+        first_try_success = any("correct_first_try" == a.get("result") for a in attempts)
+        
+        if st.session_state.get(f"solved_success_{qid}") and first_try_success:
             if next_topic_available and same_topic_available:
                 col1, col2 = st.columns(2)
                 with col1:
-                    if st.button("📚 Otra pregunta del mismo tema", 
-                            key=f"same_topic_btn_{qid}",  # Cambiado
-                            use_container_width=True,
-                            type="secondary"):
+                    if st.button("📚 Otra pregunta del mismo tema", key=f"same_{qid}", use_container_width=True):
                         next_idx = find_next_index_same_topic(visuals, current_idx)
                         reset_question_state(qid)
                         st.session_state["visual_idx"] = next_idx
-                        
+                        st.rerun()
                 with col2:
-                    if st.button("🚀 Avanzar al siguiente tema", 
-                            key=f"next_topic_btn_{qid}",  # Cambiado
-                            use_container_width=True,
-                            type="secondary"):
+                    if st.button("🚀 Avanzar al siguiente tema", key=f"next_{qid}", use_container_width=True):
                         next_idx = find_next_index_next_topic(visuals, current_idx)
                         reset_question_state(qid)
                         st.session_state["visual_idx"] = next_idx
-                        
-                        
+                        st.rerun()
             elif next_topic_available:
-                if st.button("🚀 Avanzar al siguiente tema", 
-                        key=f"next_topic_solo_{qid}",  # Cambiado
-                        use_container_width=True,
-                        type="secondary"):
+                if st.button("🚀 Avanzar al siguiente tema", key=f"next_solo_{qid}", use_container_width=True):
                     next_idx = find_next_index_next_topic(visuals, current_idx)
                     reset_question_state(qid)
                     st.session_state["visual_idx"] = next_idx
-                
-                    
+                    st.rerun()
             elif same_topic_available:
-                if st.button("📚 Otra pregunta del mismo tema", 
-                        key=f"same_topic_solo_{qid}",  # Cambiado
-                        use_container_width=True,
-                        type="secondary"):
-                    next_idx = find_next_index_same_topic(visuals, current_idx)
-                    reset_question_state(qid)
-                    st.session_state["visual_idx"] = next_idx
-                    
-        
-        # Si acertó en el segundo intento o falló ambos, solo ofrecer misma opción
-        else:
-            if same_topic_available:
-                if st.button("➡️ Continuar con otra pregunta", 
-                        key=f"continue_same_{qid}", 
-                        use_container_width=True,
-                        type="secondary"):
+                if st.button("📚 Otra pregunta del mismo tema", key=f"same_solo_{qid}", use_container_width=True):
                     next_idx = find_next_index_same_topic(visuals, current_idx)
                     reset_question_state(qid)
                     st.session_state["visual_idx"] = next_idx
                     st.rerun()
-                    
+        else:
+            # Acertó en segundo intento o falló ambos
+            if same_topic_available:
+                if st.button("➡️ Continuar", key=f"cont_{qid}", use_container_width=True):
+                    next_idx = find_next_index_same_topic(visuals, current_idx)
+                    reset_question_state(qid)
+                    st.session_state["visual_idx"] = next_idx
+                    st.rerun()
             elif next_topic_available:
-                if st.button("➡️ Continuar al siguiente tema", 
-                        key=f"continue_next_{qid}", 
-                        use_container_width=True,
-                        type="secondary"):
+                if st.button("➡️ Continuar al siguiente tema", key=f"cont_next_{qid}", use_container_width=True):
                     next_idx = find_next_index_next_topic(visuals, current_idx)
                     reset_question_state(qid)
                     st.session_state["visual_idx"] = next_idx
                     st.rerun()
-                    
             else:
-                if st.button("🏁 Finalizar módulo", 
-                        key=f"finish_{qid}", 
-                        use_container_width=True,
-                        type="secondary"):
+                if st.button("🏁 Finalizar módulo", key=f"finish_{qid}", use_container_width=True):
                     st.session_state["progress"]["completed"] = True
                     st.session_state["visual_idx"] = len(visuals)
                     st.rerun()
 
-    # Mostrar progreso actual
-    if "progress" in st.session_state and "by_topic" in st.session_state["progress"]:
-        st.sidebar.markdown("### 📊 Progreso")
-        for topic, stats in st.session_state["progress"]["by_topic"].items():
-            total = stats["ok"] + stats["fail"]
-            if total > 0:
-                percentage = (stats["ok"] / total) * 100
-                st.sidebar.write(f"**{topic}**: {stats['ok']}/{total} ({percentage:.1f}%)")

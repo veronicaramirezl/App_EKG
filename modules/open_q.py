@@ -67,7 +67,7 @@ def render_open_all(open_list, api_key):
 
     # Mostrar ECG
     try:
-        st.image(load_image(q["image"]), use_column_width=True)
+        st.image(load_image(q["image"]), use_container_width=True)
     except Exception:
         st.error("No se pudo cargar la imagen.")
 
