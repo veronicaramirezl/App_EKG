@@ -218,4 +218,4 @@ def render_open_all(open_list, api_key):
             if feedback_key in st.session_state: del st.session_state[feedback_key]
             if result_key in st.session_state: del st.session_state[result_key]
             
-            st.experimental_rerun()
+            st.rerun()
