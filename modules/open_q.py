@@ -153,7 +153,10 @@ def render_open_all(open_list, api_key):
                     f"Descripción: {ekg_description}\n"
                     f"Justificación: {justification}"
                 )
-
+                instuction = "llegar al diagnóstico correcto basándote en tu análisis estructurado y justificación"
+                
+                context = f"Diagnóstico correcto: {q['correct_diagnosis']}\nClaves: {q['key_features']}"
+                
                 gold = (
                     f"Diagnóstico correcto: {q['correct_diagnosis']}\n"
                     f"Claves: {q['key_features']}"
@@ -170,7 +173,7 @@ def render_open_all(open_list, api_key):
                         f"{student_full}"
                     )
 
-                    feedback = get_ai_feedback(api_key, "Experto ECG", prompt)
+                    feedback = get_ai_feedback(api_key, "Experto ECG", prompt,instuction, context, model="gemini")
 
                 # ¿El estudiante mencionó el diagnóstico correcto?
                 import matplotlib
