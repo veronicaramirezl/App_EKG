@@ -114,7 +114,7 @@ def login_screen():
         )
 
         b1, b2, b3 = st.columns([1, 2, 1])
-        with b2:
+        with b1:
             submit = st.form_submit_button("Ingresar")
 
     # ---------- VALIDACIÓN ----------
