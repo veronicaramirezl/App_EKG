@@ -8,7 +8,7 @@ def load_css():
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Inter:wght@400;500&display=swap');
 
     :root{
-        --primary-red: #E63946;
+        --primary-red: #F8C8DC;
         --soft-red: #FF8B94;
         --bg-main: #FAFAFA;
         --bg-card: #FFFFFF;
@@ -122,8 +122,8 @@ def load_css():
 
     /* Botones - compactos */
     .stButton > button{
-        background: var(--gradient);
-        color: #fff;
+        background:;
+        color: #F8C8DC;
         border-radius: 10px;
         padding: 0.55rem 1.4rem;
         font-weight: 600;

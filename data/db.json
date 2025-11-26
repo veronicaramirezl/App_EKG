@@ -46,7 +46,7 @@
       "title": "Frecuencia #1 ",
       "image": "ej_3.png",
       "corrected_image": "ej_3_marked.png",
-      "instruction": "Marca el primer y ultimo pico del QRS que vayas a medir, e indica cual es la frecuencia cardíaca promedio.",
+      "instruction": "Saca la frecuencia cardiaca promedio, para esto marca el primer y ultimo pico del QRS que vaya a estar en tu medición de la FC.",
       "ms_per_pixel": 1.6,
       "correct_ms": 140,  
       "tolerance_ms": 50,

@@ -6,7 +6,45 @@ import google.generativeai as genai
 import google.generativeai as genai
 import openai
 
+def get_ai_visual_feedback(api_key, img_base64, user_measurement, correct_ms, tolerance, instruction, explanation=""):
+    """Envía la imagen con las marcas del estudiante a Gemini para revisión visual."""
+    import google.generativeai as genai
+    import PIL.Image
+    import io
+    import base64
+    
+    # Configurar Gemini
+    genai.configure(api_key=api_key)
+    
+    # Convertir base64 a imagen PIL
+    img_data = base64.b64decode(img_base64)
+    img_pil = PIL.Image.open(io.BytesIO(img_data))
+    
+    # Crear el modelo Gemini (usando Gemini 1.5 Flash o Pro para imágenes)
+    model = genai.GenerativeModel('gemini-2.5-flash')
+    
+    prompt = f"""tu Eres un profesor experto en electrocardiografía. Revisa visualmente las marcas que el estudiante hizo en el ECG.
 
+el mensaje debe ser conciso pero facil de entender. Debes dirigirte al estudiante en segunda persona.
+El estudiante debe {instruction}.
+
+Ha marcado puntos en la imagen y midió {user_measurement} ms.
+El valor correcto es {correct_ms} ms (tolerancia: ±{tolerance} ms).
+
+su razonamiento para haberlo hecho asi es este: {explanation}
+
+Analiza la imagen y, sin decir nunca la respuesta exacta, responde a las siguientes preguntas:
+Si hay errores, explica QUÉ está mal y CÓMO corregirlo (sin dar la respuesta exacta). donde fue el error? tal vez la marca no fue adecuad, tal vez si fue adecuada pero la medición fue incorrecta, etc.
+
+Sé específico sobre la ubicación de los puntos en el complejo ECG."""
+
+    try:
+        # Enviar imagen y prompt a Gemini
+        response = model.generate_content([prompt, img_pil])
+        return response.text
+    except Exception as e:
+        return f"Error con Gemini: {str(e)}"
+    
 def get_ai_feedback(api_key, system_prompt, user_input, model="gemini"):
 
     if not api_key:
