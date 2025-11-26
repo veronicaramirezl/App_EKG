@@ -408,8 +408,6 @@ def render(data_db, api_key):
 
     # Botones de navegación
     if st.session_state.get(f"solved_success_{qid}") or st.session_state.get(f"failed_second_attempt_{qid}"):
-        st.markdown("---")
-        st.subheader("¿Qué quieres hacer ahora?")
         
         same_topic_available = find_next_index_same_topic(visuals, current_idx) is not None
         next_topic_available = find_next_index_next_topic(visuals, current_idx) is not None
@@ -419,6 +417,9 @@ def render(data_db, api_key):
         first_try_success = any("correct_first_try" == a.get("result") for a in attempts)
         
         if st.session_state.get(f"solved_success_{qid}") and first_try_success:
+            st.success(f"✅ ¡Excelente! Respuesta correcta a la primera. El valor correcto era {q.get('correct_ms')} ms.")
+            st.markdown("---")
+            st.subheader("¿Qué quieres hacer ahora?")
             if next_topic_available and same_topic_available:
                 col1, col2 = st.columns(2)
                 with col1:
