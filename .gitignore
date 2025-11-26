@@ -4,3 +4,18 @@ ekg_app/modules/__pycache__/visual.cpython-312.pyc
 ekg_app/modules/__pycache__/open_q.cpython-312.pyc
 ekg_app/modules/__pycache__/multiple.cpython-312.pyc
 ekg_app/frozen.txt
+# --- Entornos Virtuales (Virtual Environments) ---
+venv/
+.venv/
+env/
+__pycache__/
+
+# --- Distribución y Builds ---
+.dist/
+dist/
+build/
+*.egg-info/
+
+# --- Archivos de sistema y logs ---
+.DS_Store
+*.log
