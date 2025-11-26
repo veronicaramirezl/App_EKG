@@ -3,3 +3,4 @@ streamlit-drawable-canvas
 openai
 Pillow
 google-generativeai
+matplotlib
