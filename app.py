@@ -4,10 +4,9 @@ import json
 from utils.styles import load_css
 from modules import visual, multiple, open_q
 from login import login_screen
+from welcome import welcome_screen  # NUEVA IMPORTACIÓN
 from utils.gsheets import append_user_result
 from PIL import Image
-
-
 
 
 params = st.query_params
@@ -45,6 +44,14 @@ if "user_data" not in st.session_state:
 if st.session_state["user_data"] is None:
     login_screen()
     st.stop()
+
+
+# Estado para pantalla de bienvenida (NUEVO)
+if "welcome_completed" not in st.session_state:
+    st.session_state["welcome_completed"] = False
+
+if "selected_module" not in st.session_state:
+    st.session_state["selected_module"] = None
 
 
 # Estado para progreso
@@ -88,6 +95,18 @@ with st.sidebar:
     
     # Menú con iconos mejorados
     st.markdown("#### 📚 Módulos de Aprendizaje")
+    
+    # Si hay un módulo preseleccionado desde la pantalla de bienvenida, usarlo
+    default_index = 0
+    if st.session_state["selected_module"]:
+        modules = [
+            "📏 Medición de Intervalos",
+            "✅ Selección Múltiple",
+            "🩺 Diagnóstico Completo"
+        ]
+        if st.session_state["selected_module"] in modules:
+            default_index = modules.index(st.session_state["selected_module"])
+    
     mode = st.radio(
         "Selecciona un módulo:",
         [
@@ -95,6 +114,7 @@ with st.sidebar:
             "✅ Selección Múltiple",
             "🩺 Diagnóstico Completo"
         ],
+        index=default_index,
         label_visibility="collapsed"
     )
     
@@ -121,7 +141,6 @@ with st.sidebar:
     if "visual_idx" not in st.session_state:
         st.session_state["visual_idx"] = 0
 
-
     
     # Footer
     st.markdown("---")
@@ -133,6 +152,12 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 
+# ----------------------------------------------------
+# PANTALLA DE BIENVENIDA (NUEVO)
+# ----------------------------------------------------
+if not st.session_state["welcome_completed"]:
+    welcome_screen()
+    st.stop()
 
 
 # ----------------------------------------------------
@@ -146,10 +171,7 @@ elif "✅ Selección" in mode:
     multiple.render(data_db["multiple_choice"])
 
 elif "🩺 Diagnóstico" in mode:
-    
     open_q.render_open_all(data_db["open"], api_key)
-    
-
     
 
 # ----------------------------------------------------
@@ -207,7 +229,6 @@ if st.session_state["progress"]["completed"]:
         st.metric("📈 Nivel de Dominio", accuracy)
 
     # GUARDAR EN GOOGLE SHEETS
-    # --------------------
     if not st.session_state["sheets_saved"]:
         try:
             append_user_result(
@@ -237,10 +258,7 @@ if st.session_state["progress"]["completed"]:
 
     st.markdown("---")
 
-
-    # --------------------
     # DESEMPEÑO POR TEMA
-    # --------------------
     st.markdown("### 📌 Rendimiento por Tema")
 
     for topic, stats in by_topic.items():
@@ -250,7 +268,6 @@ if st.session_state["progress"]["completed"]:
             
         pct = round(stats["ok"] / total_t * 100)
         
-        # Determinar color y emoji según rendimiento
         if pct >= 75:
             color = "#06D6A0"
             emoji = "🌟"
@@ -283,9 +300,7 @@ if st.session_state["progress"]["completed"]:
 
     st.markdown("---")
 
-    # --------------------
     # TEMAS DÉBILES
-    # --------------------
     weak = [t for t, s in by_topic.items() if s["fail"] > s["ok"]]
 
     if weak:

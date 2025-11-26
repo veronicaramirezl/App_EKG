@@ -266,15 +266,17 @@ def render(data_db, api_key):
 
     # Header
     if current_idx == 0:
-        st.markdown("<h1 style='text-align: center;'>Módulo de Medición de Intervalos en ECG</h1>", unsafe_allow_html=True)
+        st.markdown("""
+        <h1 style='text-align: center; margin-top: 50px;'>Módulo de Medición de Intervalos en ECG</h1>
+        """, unsafe_allow_html=True)
         st.markdown("""
         **Instrucciones:**
-        1. Dibuja círculos en el ECG para marcar el inicio y fin del intervalo
-        2. Escribe tu medición en milisegundos
-        3. La IA revisará tu explicación (NO la imagen) y te dará feedback
+        1. Dibuja círculos o líneas para guiarte en el ECG. Puedes marcar el inicio y fin del intervalo o contar la cuadricula, lo que necesites.
+        2. Escribe tu medición en milisegundos o en lpm según se indique.
+        3. La IA revisará tu explicación  y te dará feedback en caso de que necesites ayuda. Después podrás intentar de nuevo.
         """)
 
-    st.header(f"📏 [{q.get('topic','')}] {q.get('title')}")
+    st.header(f"📏 {q.get('title')}")
     st.info(q.get("instruction", ""))
 
     # Cargar imagen
