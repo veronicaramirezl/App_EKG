@@ -276,7 +276,7 @@ def render(data_db, api_key):
         3. La IA revisará tu explicación  y te dará feedback en caso de que necesites ayuda. Después podrás intentar de nuevo.
         """)
 
-    st.header(f"📏 {q.get('title')}")
+    st.markdown(f"<h2 style='margin-top:40px; margin-bottom:20px;'>📏 {q.get('title')}</h2>", unsafe_allow_html=True)
     st.info(q.get("instruction", ""))
 
     # Cargar imagen
@@ -348,6 +348,7 @@ def render(data_db, api_key):
                     Analiza la imagen y, sin decir nunca la respuesta exacta, responde a las siguientes preguntas:
                     - Si hay errores, explica QUÉ está mal y CÓMO corregirlo (sin dar la respuesta exacta). 
                     - Dónde fue el error? Tal vez la marca no fue adecuada, tal vez sí fue adecuada pero la medición fue incorrecta, etc.
+                    - Dale una pista para que pueda mejorar su medición, tal vez diciendo que se quedo corto o se pasó pero sin dar la respuesta exacta.
 
                     Sé específico sobre la ubicación de los puntos en el complejo ECG.
                     """,
