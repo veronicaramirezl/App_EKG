@@ -38,8 +38,8 @@ def render(data_list):
 
     q = data_list[idx]
 
-    st.header("📝 Pregunta Teórica")
-    st.markdown(f"### {q['question']}")
+    st.markdown("<h2 style='margin-top:60px; margin-bottom:20px;'>📝 Pregunta Teórica</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h3>{q['question']}</h3>", unsafe_allow_html=True)
 
     options = list(q["options"].keys())
 

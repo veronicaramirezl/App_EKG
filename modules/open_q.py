@@ -63,7 +63,8 @@ def render_open_all(open_list, api_key):
     if status_key not in st.session_state:
         st.session_state[status_key] = "input"
 
-    st.header("🩺 Interpretación Diagnóstica del ECG")
+    st.markdown("<h2 style='margin-top:60px; margin-bottom:20px;'>🩺 Interpretación Diagnóstica del ECG</h2>", unsafe_allow_html=True)
+
 
     # Mostrar ECG
     try:
