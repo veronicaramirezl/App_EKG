@@ -66,7 +66,7 @@ def render(data_list):
             
             st.session_state[answered_key] = True
             register_result_mc(q, selected)
-            st.experimental_rerun()
+            st.rerun()
 
     # Cuando ya respondió → mostrar explicación
     else:
@@ -82,4 +82,4 @@ def render(data_list):
         st.markdown("---")
         if st.button("➡️ Siguiente pregunta", key=f"next_{q['id']}"):
             st.session_state["mc_idx"] += 1
-            st.experimental_rerun()
+            st.rerun()

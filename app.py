@@ -10,7 +10,7 @@ from PIL import Image
 
 
 
-params = st.experimental_get_query_params()
+params = st.query_params
 
 # ----------------------------------------------------
 # CONFIGURACIÓN GENERAL DE LA APP

@@ -31,6 +31,7 @@
       "tolerance_ms": 20,
       "valid_zone_pairs": [
       {"x_min": 20, "x_max": 140},
+      {"x_min": 130, "x_max": 155},
       {"x_min": 250, "x_max": 275},
       {"x_min": 373, "x_max": 390},
       {"x_min": 485, "x_max": 505}
@@ -49,7 +50,7 @@
       "ms_per_pixel": 1.6,
       "correct_ms": 140,  
       "tolerance_ms": 50,
-      "valid_zone": { "x_min": -1, "x_max": 600 }
+      "valid_zone": { "x_min": 30, "x_max": 600 }
     },
 
     {
@@ -89,7 +90,7 @@
       "ms_per_pixel": 1.6,
       "correct_ms": 280,
       "tolerance_ms": 20,
-      "valid_zone": { "x_min": 20, "x_max": 600 }
+      "valid_zone": { "x_min": 35, "x_max": 125 }
     },
     {
       "id": 11,
@@ -101,7 +102,7 @@
       "ms_per_pixel": 1.6,
       "correct_ms": 640,
       "tolerance_ms": 10,
-      "valid_zone": { "x_min": 20, "x_max": 700 }
+      "valid_zone": { "x_min": 75, "x_max": 290 }
     },
 
     {

@@ -24,10 +24,11 @@ def login_screen():
             padding: 0 15px; 
         }
         
+        /* ⚠️ CAMBIO CLAVE 1: Eliminamos la limitación de ancho y el centrado de margen del .stForm */
         .stForm {
-            max-width: 550px; /* Ancho máximo para el formulario */
-            margin-left: auto;
-            margin-right: auto;
+            /* max-width: 550px; <-- ELIMINADO */
+            /* margin-left: auto; <-- ELIMINADO */
+            /* margin-right: auto; <-- ELIMINADO */
             padding: 10px;
             border: 1px solid #f0f2f6;
             border-radius: 8px;
@@ -46,14 +47,18 @@ def login_screen():
     st.markdown("<h1>Bienvenido/a a</h1>", unsafe_allow_html=True)
 
     # ----------- LOGO (Centrado con st.columns y tamaño fijo) -----------
-    c1, c2, c3 = st.columns([1, 1.11, 1]) 
+    c1, c2, c3 = st.columns([1, 5, 1]) 
     
     with c2: 
-        try:
-            logo = Image.open("assets/logo/logo.png")
-            st.image(logo, width=600) 
-        except FileNotFoundError:
-            st.error("Error: No se encontró el logo en la ruta relativa 'assets/logo/logo.png'.")
+        # NOTA: Usamos el doble centrado (aunque redundante, es el más seguro en Streamlit)
+        logo_col1, logo_col2, logo_col3 = st.columns([1, 1, 1])
+        with logo_col2:
+            try:
+                logo = Image.open("assets/logo/logo.png")
+                # El ancho de 250px es un buen tamaño para el logo
+                st.image(logo, width=250) 
+            except FileNotFoundError:
+                st.error("Error: No se encontró el logo en la ruta relativa 'assets/logo/logo.png'.")
 
     # ----------- TEXTO -----------
     st.markdown("""
@@ -80,6 +85,9 @@ def login_screen():
     st.markdown('</div>', unsafe_allow_html=True)
 
     # ----------- FORMULARIO DE LOGIN Y DATOS DEMOGRÁFICOS -----------     
+    
+    # ⚠️ CAMBIO CLAVE 2: ELIMINAMOS las columnas f1, f2, f3 que centraban el formulario
+    # y hacemos que el formulario ocupe todo el ancho disponible.
     with st.form("login_form", clear_on_submit=False):
         st.subheader("Datos de Acceso e Investigación 📝")
         
@@ -92,7 +100,7 @@ def login_screen():
         
         # 2. DATOS DEMOGRÁFICOS RELEVANTES
         
-        # Fila 1: Sexo y País
+        # Fila 1: Sexo y País (Ocuparán el 50% cada uno del ancho del formulario)
         col_sexo, col_pais = st.columns(2)
         with col_sexo:
             sex = st.selectbox("Sexo *", ["", "Femenino", "Masculino", "Otro", "Prefiero no decir"])
@@ -105,23 +113,20 @@ def login_screen():
             ["", "Estudiante de Medicina Pregrado", "Internado/Rural", "Residente (Especialización)", "Graduado/Especialista"]
         )
         
-        # CAMPO DE SEMESTRE MODIFICADO - MÁS SIMPLE
+        # CAMPO DE SEMESTRE
         term = None
         
         if level == "Graduado/Especialista":
-            # Para graduados, establecer automáticamente como "Graduado"
             term = "Graduado"
             st.info("🔹 Nivel: Graduado/Especialista - El campo de semestre se ha establecido automáticamente")
             
         elif level in ["Estudiante de Medicina Pregrado", "Internado/Rural", "Residente (Especialización)"]:
-            # Para estudiantes, mostrar selector de semestre
             term = st.selectbox(
                 "Semestre actual *",
-                ["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"],
+                [""] + [str(i) for i in range(1, 15)], # Usamos str para evitar confusión con el valor None
                 help="Selecciona el semestre que estás cursando actualmente (1 a 14)"
             )
         else:
-            # Cuando no hay nivel seleccionado
             st.write("Selecciona tu nivel de formación para ver las opciones de semestre")
             
         university = st.text_input("Universidad/Institución *")
@@ -152,8 +157,9 @@ def login_screen():
         )
         
         # 5. BOTÓN DE ENVÍO (Centrado)
+        # ⚠️ Mantenemos las columnas para centrar SÓLO el botón dentro del formulario
         b1, b2, b3 = st.columns([1, 2, 1])
-        with b2:
+        with b1:
             submit = st.form_submit_button("Ingresar")
 
     if submit:
@@ -179,11 +185,9 @@ def login_screen():
             
         # 2. Validación específica para el campo de semestre
         if level == "Graduado/Especialista":
-            # Para graduados, el término es automáticamente "Graduado"
-            pass  # Ya está establecido arriba
+            pass # Término es "Graduado"
             
         elif level in ["Estudiante de Medicina Pregrado", "Internado/Rural", "Residente (Especialización)"]:
-            # Para otros niveles, debe tener un semestre seleccionado
             if not term or term == "":
                 st.error("Debes seleccionar un semestre válido entre 1 y 14.")
                 return
@@ -203,11 +207,11 @@ def login_screen():
             "sex": sex,
             "country": country,
             "level": level,
-            "term": term, # Guardará el número (1-14) o la palabra "Graduado"
+            "term": term, 
             "university": university,
             "experience": experience,
             "formal_training": formal_training,
             "clinical_frequency": clinical_frequency
         }
-        st.success("✅ Datos guardados correctamente. Redirigiendo...")
-        st.experimental_rerun()
+        # Reemplazamos experimental_rerun por st.rerun
+        st.rerun()
