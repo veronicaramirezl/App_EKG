@@ -1,3 +1,4 @@
+from matplotlib import text
 import streamlit as st
 from utils.helpers import load_image, get_ai_feedback
 
@@ -48,7 +49,7 @@ def render_open_all(open_list, api_key):
             st.session_state["progress"]["attempts"] = []
             st.session_state["progress"]["by_topic"] = {}
             st.session_state["progress"]["completed"] = False
-            st.rerun()
+            st.experimental_rerun()
         return
 
     # Obtener caso actual
@@ -98,7 +99,7 @@ def render_open_all(open_list, api_key):
                     key=f"axis_{q['id']}"
                 )
                 pr = st.selectbox("Intervalo PR:", 
-                    ["Selecciona...", "Normal", "Prolongado", "Corto"],
+                    ["Selecciona...", "Normal", "Prolongado", "Corto", "No medible"],
                     key=f"pr_{q['id']}"
                 )
 
@@ -108,17 +109,17 @@ def render_open_all(open_list, api_key):
                     key=f"qrs_{q['id']}"
                 )
                 st_segment = st.selectbox("Segmento ST:", 
-                    ["Selecciona...", "Normal", "Elevado", "Deprimido"],
+                    ["Selecciona...", "Normal", "Elevado", "Deprimido", "No evaluable"],
                     key=f"st_{q['id']}"
                 )
                 pwaves = st.selectbox("Ondas P:", 
-                    ["Selecciona...", "Presentes", "Ausentes", "Fibrilatorias"],
+                    ["Selecciona...", "Presentes", "Ausentes", "Anormales"],
                     key=f"p_{q['id']}"
                 )
 
             st.write("---")
             st.subheader("2️⃣ Análisis obligatorio")
-            ekg_description = st.text_area("Descripción (¿qué ves?):", height=120)
+            ekg_description = st.text_area("Descripción (¿Cómo le presentarías el caso a un colega?):", height=120)
             justification = st.text_area("Justificación (¿por qué llegas al diagnóstico?):", height=120)
 
             submitted = st.form_submit_button("📤 Enviar análisis completo")
@@ -161,7 +162,7 @@ def render_open_all(open_list, api_key):
                 with st.spinner("🤖 Analizando tu interpretación..."):
                     prompt = (
                         "Eres un cardiólogo experto. Evalúa la interpretación del estudiante.\n"
-                        "Indica si su diagnóstico concuerda o no.\n"
+                        "Indica si su diagnóstico concuerda o no. vas a decir Diagnóstico correcto! o Diagnóstico incorrecto!\n"
                         "Explica brevemente en segunda persona sus aciertos o errores.\n\n"
                         f"{gold}\n\n"
                         f"Evaluación del estudiante:\n{structured}\n\n"
@@ -171,8 +172,14 @@ def render_open_all(open_list, api_key):
                     feedback = get_ai_feedback(api_key, "Experto ECG", prompt)
 
                 # ¿El estudiante mencionó el diagnóstico correcto?
-                student_txt = (structured + ekg_description + justification).lower()
-                result_status = "correct" if q["correct_diagnosis"].lower() in student_txt else "fail"
+                import matplotlib
+                text = feedback.lower()
+                feedback_correct = ("diagnóstico correcto" in text) or ("diagnostico correcto" in text)
+
+                
+                # Evaluar si aparece en el texto del estudiante
+                result_status = "correct" if feedback_correct else "fail"
+
 
                 # Guardar estados
                 st.session_state[feedback_key] = feedback
@@ -182,7 +189,7 @@ def render_open_all(open_list, api_key):
 
                 # Cambiar a modo feedback Y RECARGAR
                 st.session_state[status_key] = "feedback"
-                st.rerun()  # <--- ESTA ES LA CLAVE
+                st.experimental_rerun()  # <--- ESTA ES LA CLAVE
 
     # ===========================================================
     #     FASE 2 — RETROALIMENTACIÓN + SIGUIENTE CASO
@@ -207,4 +214,4 @@ def render_open_all(open_list, api_key):
             if feedback_key in st.session_state: del st.session_state[feedback_key]
             if result_key in st.session_state: del st.session_state[result_key]
             
-            st.rerun()
+            st.experimental_rerun()

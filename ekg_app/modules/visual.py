@@ -4,6 +4,14 @@ from utils.helpers import load_image, get_ai_feedback
 import time
 
 # ---------- UTILS ----------
+import io
+from PIL import Image
+
+def image_to_bytes(pil_img):
+    buffer = io.BytesIO()
+    pil_img.save(buffer, format="PNG")
+    return buffer.getvalue()
+
 def register_result(q, result):
     """Registra el resultado del estudiante en el sistema de progreso."""
     topic = q.get("topic", "General")
@@ -29,7 +37,10 @@ def reset_question_state(qid):
     keys = [f"first_expl_sent_{qid}", f"ai_feedback_{qid}", f"user_ms_{qid}",
             f"canvas_{qid}", f"points_{qid}", f"logic_{qid}", f"attempt_failed_{qid}", 
             f"failed_second_attempt_{qid}", f"second_ms_value_{qid}",
-            f"solved_success_{qid}"] # <--- AGREGADO: Limpiar estado de éxito
+            f"solved_success_{qid}"]
+    for key in list(st.session_state.keys()):
+        if key.startswith(f"canvas_{qid}") or f"canvas_{qid}" in key:
+            keys.append(key)
     for k in keys:
         if k in st.session_state:
             del st.session_state[k]
@@ -62,7 +73,16 @@ def render(data_db, api_key):
     data_db: contenido completo de data/db.json (dict)
     api_key: str con OpenAI API key (o None)
     """
+    if "visual_initialized" not in st.session_state:
+        st.session_state.visual_initialized = True
+        # Limpiar cualquier estado previo del canvas
+        for key in list(st.session_state.keys()):
+            if "canvas_" in key:
+                del st.session_state[key]
+        st.experimental_rerun()
+    
     visuals = data_db.get("visual", [])
+    
     if len(visuals) == 0:
         st.warning("No hay ejercicios visuales en la base de datos.")
         return
@@ -77,15 +97,25 @@ def render(data_db, api_key):
         st.success("🎉 Has terminado todos los ejercicios. ¡Bien hecho!")
         
         # Botón extra para reiniciar si quieren volver a practicar
-        if st.button("🔄 Reiniciar módulo visual"):
+        if st.button("🔄 Volver a empezar"):
             st.session_state["visual_idx"] = 0
+            st.session_state["progress"]["attempts"] = []
+            st.session_state["progress"]["by_topic"] = {}
             st.session_state["progress"]["completed"] = False
-            st.rerun()
+            st.experimental_rerun()
+       
         return
 
     q = visuals[current_idx]
     qid = q["id"]
-
+    # crea un header general centrado en la parte superior
+    if current_idx == 0:
+        st.markdown("<h1 style='text-align: center;'>Módulo de Medición de Intervalos en ECG</h1>", unsafe_allow_html=True)
+    # Escribe una bienvenida e instrucciones generales
+    st.markdown("""
+    Bienvenido al módulo de medición de intervalos en ECG. Aquí practicarás cómo identificar y medir correctamente diversos intervalos clave en un electrocardiograma.
+    Sigue las instrucciones para cada ejercicio, utiliza el canvas para marcar los puntos relevantes, y recibe retroalimentación personalizada para mejorar tus habilidades.
+    """)
     # Inicializar flags por pregunta
     if f"first_expl_sent_{qid}" not in st.session_state:
         st.session_state[f"first_expl_sent_{qid}"] = False
@@ -101,27 +131,56 @@ def render(data_db, api_key):
     st.header(f"📏 [{q.get('topic','')}] {q.get('title')}")
     st.info(q.get("instruction", ""))
 
-    # ----- CANVAS -----
-    # Congelamos el canvas en modo 'transform' si ya resolvió para que no mueva los puntos accidentalmente
-    mode = "transform" if st.session_state[f"solved_success_{qid}"] else "circle"
+    # ----- CANVAS ----
     
+    # Congelamos el canvas en modo 'transform' si ya resolvió para que no mueva los puntos accidentalmente
+    col1, col2, col3 = st.columns([1,3,1])
     canvas_key = f"canvas_{qid}"
-    canvas_result = st_canvas(
-        background_image=load_image(q.get("image")),
-        height=300, width=600,
-        drawing_mode=mode,
-        stroke_width=1,
-        stroke_color="red",
-        fill_color="rgba(255,0,0,0.7)", 
-        update_streamlit=True,
-        key=canvas_key
+    
+                
+    # Cargar imagen primero
+    img_path = q.get("image")
+    img = load_image(img_path)
+    
+
+    if img is None:
+        st.error(f"No se pudo cargar la imagen: {img_path}")
+        st.stop()
+
+    # Limpieza suave del canvas
+    if canvas_key in st.session_state:
+        if isinstance(st.session_state[canvas_key], dict):
+            st.session_state[canvas_key].pop("image", None)
+            st.session_state[canvas_key].pop("objects", None)
+
+    mode = "transform" if st.session_state[f"solved_success_{qid}"] else "circle"
+
+    with col2:
+        canvas_result = st_canvas(
+            background_image=img.copy(),
+            height=img.height,
+            width=img.width,
+            drawing_mode=mode,
+            stroke_width=1,
+            stroke_color="red",
+            fill_color="rgba(255,0,0,0.7)",
+            update_streamlit=True,
+            key=canvas_key
     )
 
-    if canvas_result is None or canvas_result.json_data is None:
-        st.write("Selecciona 2 puntos sobre el ECG (inicio y fin del intervalo).")
+
+    if not (canvas_result and canvas_result.json_data):
+        st.warning("Selecciona 2 puntos sobre el ECG (inicio y fin del intervalo).")
         return
 
     points = canvas_result.json_data.get("objects", [])
+    # Imprimir coordenadas
+    for i, point in enumerate(points):
+        # Para círculos o rectángulos, suelen tener "left" y "top"
+        x = point.get("left", None)
+        y = point.get("top", None)
+        st.write(f"Punto {i+1}: x={x}, y={y}")
+
     
     # =========================================================================
     # 🌟 MENU DE DECISIÓN (SI YA RESOLVIÓ CORRECTAMENTE)
@@ -143,8 +202,10 @@ def render(data_db, api_key):
                 st.info(f"Siguen más ejercicios de **{q.get('topic')}**.")
                 if st.button(f"Practicar más {q.get('topic')}", type="primary"):
                     reset_question_state(qid)
+                    if canvas_key in st.session_state:
+                        del st.session_state[canvas_key]
                     st.session_state["visual_idx"] = next_same
-                    st.rerun()
+                    st.experimental_rerun()
             else:
                 st.write(f"Has terminado el tema {q.get('topic')}.")
 
@@ -155,16 +216,20 @@ def render(data_db, api_key):
                 st.info(f"Saltar a **{new_topic_name}**.")
                 if st.button(f"Pasar a {new_topic_name}"):
                     reset_question_state(qid)
+                    if canvas_key in st.session_state:
+                        del st.session_state[canvas_key]
                     st.session_state["visual_idx"] = next_topic
-                    st.rerun()
+                    st.experimental_rerun()
             else:
                 if next_same is None:
                     st.success("¡Has completado todo el módulo!")
                     if st.button("🏁 Finalizar módulo"):
+                        # CORRECCIÓN: Avanzar el índice para que se active el resumen
+                        st.session_state["visual_idx"] = len(visuals)
                         st.session_state["progress"]["completed"] = True
-                        st.rerun()
+                        st.experimental_rerun()  # Usar experimental_rerun() en lugar de stop()
 
-        st.stop() # Detenemos aquí para que no salga el resto de la interfaz
+        
 
     # =========================================================================
     # 🔽 FLUJO DE RESPUESTA (Si no ha resuelto)
@@ -206,7 +271,7 @@ def render(data_db, api_key):
             register_result(q, "correct_first_try")
             # En lugar de avanzar, activamos el menú de decisión
             st.session_state[f"solved_success_{qid}"] = True
-            st.rerun()
+            st.experimental_rerun()
 
         else:
             # Es incorrecto: activamos la bandera para mostrar explicación
@@ -245,7 +310,7 @@ def render(data_db, api_key):
                     
                     st.session_state[f"ai_feedback_{qid}"] = ai_fb
                 
-                st.rerun()
+                st.experimental_rerun()
 
     # --- MOSTRAR FEEDBACK Y SEGUNDO INPUT ---
     if st.session_state.get(f"first_expl_sent_{qid}", False):
@@ -272,13 +337,13 @@ def render(data_db, api_key):
                 register_result(q, "correct_second_try")
                 # En lugar de avanzar, activamos el menú de decisión
                 st.session_state[f"solved_success_{qid}"] = True
-                st.rerun()
+                st.experimental_rerun()
 
             else:
                 # Falló el segundo: mostramos solución final
                 register_result(q, "failed_second_try")
                 st.session_state[f"failed_second_attempt_{qid}"] = True
-                # No rerun, mostramos la solución abajo
+                # No experimental_rerun, mostramos la solución abajo
 
         # --- SOLUCIÓN FINAL (SI FALLÓ TODO) ---
         if st.session_state.get(f"failed_second_attempt_{qid}", False):
@@ -295,8 +360,12 @@ def render(data_db, api_key):
 
                 if next_idx is not None:
                     reset_question_state(qid)
+                    if canvas_key in st.session_state:
+                        del st.session_state[canvas_key]
                     st.session_state["visual_idx"] = next_idx
-                    st.rerun()
+                    st.experimental_rerun()
                 else:
                     st.success("¡Has terminado todo el módulo!")
                     st.session_state["progress"]["completed"] = True
+                    st.session_state["visual_idx"] = len(visuals)
+                    st.experimental_rerun()

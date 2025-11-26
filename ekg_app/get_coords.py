@@ -7,7 +7,7 @@ st.set_page_config(layout="wide")
 
 st.title("📍 Obtener coordenadas X usando Canvas")
 
-image_path = "assets/images/ej_1.png"
+image_path = "assets/images/real_image.png"
 
 img = Image.open(image_path)
 

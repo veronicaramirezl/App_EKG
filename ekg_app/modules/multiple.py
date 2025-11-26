@@ -48,7 +48,7 @@ def render(data_list):
     selected = st.radio(
         "Selecciona la respuesta:",
         options,
-        index=None,
+        index=0,
         key=selected_key
     )
 

@@ -4,7 +4,7 @@
     {
       "id": 1,
       "topic": "PR",
-      "title": "PR #1 - Medición clásica en DII",
+      "title": "Ejercicio 1 -  Intervalo PR",
       "question": "medir PR en un ritmo sinusal normal",
       "image": "ej_1.png",
       "corrected_image": "ej_1_marked.png",
@@ -13,11 +13,10 @@
       "correct_ms": 280,
       "tolerance_ms": 20,
       "valid_zone_pairs": [
-      { "x_min": -20, "x_max": 60 }, 
-        { "x_min": 100,  "x_max": 170 },
-        { "x_min": 210, "x_max": 295 },
-        { "x_min": 320, "x_max": 400 },
-        { "x_min": 440, "x_max": 510 }
+      { "x_min": 20, "x_max": 120 }, 
+        { "x_min": 250,  "x_max": 350 },
+        { "x_min": 485, "x_max": 585 },
+        { "x_min": 725, "x_max": 820 }
       ]
     },
     {
@@ -30,119 +29,79 @@
       "ms_per_pixel": 1.6,
       "correct_ms": 80,
       "tolerance_ms": 20,
-      "valid_zone": { "x_min": -1, "x_max": 600 }
+      "valid_zone_pairs": [
+      {"x_min": 20, "x_max": 140},
+      {"x_min": 250, "x_max": 275},
+      {"x_min": 373, "x_max": 390},
+      {"x_min": 485, "x_max": 505}
+      ]
+
     },
 
   
     {
-      "id": 4,
+      "id": 3,
       "topic": "FC",
       "title": "Frecuencia #1 ",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Marca el primer y ultimo pico del QRS que vayas a medir  E indica cual es la frecuencia cardíaca promedio.",
+      "image": "ej_3.png",
+      "corrected_image": "ej_3_marked.png",
+      "instruction": "Marca el primer y ultimo pico del QRS que vayas a medir, e indica cual es la frecuencia cardíaca promedio.",
       "ms_per_pixel": 1.6,
-      "correct_ms": 800,  
+      "correct_ms": 140,  
       "tolerance_ms": 50,
-      "valid_zone": { "x_min": 10, "x_max": 500 }
+      "valid_zone": { "x_min": -1, "x_max": 600 }
     },
+
     {
       "id": 5,
       "topic": "FC",
-      "title": "Frecuencia #2 - Taquicardia sinusal",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Marca dos complejos R consecutivos.",
+      "title": "Frecuencia #2",
+      "image": "ej_4.png",
+      "corrected_image": "ej_4_marked.png",
+      "instruction": "Marca el primer y ultimo pico del QRS que vayas a medir, e indica cual es la frecuencia cardíaca promedio.",
       "ms_per_pixel": 1.6,
-      "correct_ms": 500,
+      "correct_ms": 130,
       "tolerance_ms": 40,
-      "valid_zone": { "x_min": 10, "x_max": 500 }
-    },
-    {
-      "id": 6,
-      "topic": "FC",
-      "title": "Frecuencia #3 - Bradicardia sinusal",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Marca dos R consecutivos para calcular FC.",
-      "ms_per_pixel": 1.6,
-      "correct_ms": 1200,
-      "tolerance_ms": 70,
-      "valid_zone": { "x_min": 10, "x_max": 600 }
+      "valid_zone": { "x_min": -1, "x_max": 600 }
     },
 
     {
       "id": 7,
       "topic": "QRS",
-      "title": "QRS #1 - Duración normal",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Marca el inicio y final del QRS.",
+      "title": "QRS 1",
+      "image": "ej_5.png",
+      "corrected_image": "ej_5_marked.png",
+      "instruction": "Marca el inicio y final del complejo QRS.",
       "ms_per_pixel": 1.6,
-      "correct_ms": 90,
-      "tolerance_ms": 10,
-      "valid_zone": { "x_min": 20, "x_max": 200 }
+      "correct_ms": 140,
+      "tolerance_ms": 5,
+      "valid_zone": { "x_min": -1, "x_max": 600 }
     },
-    {
-      "id": 8,
-      "topic": "QRS",
-      "title": "QRS #2 - Bloqueo de rama derecha",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Marca los límites del complejo QRS.",
-      "ms_per_pixel": 1.6,
-      "correct_ms": 150,
-      "tolerance_ms": 15,
-      "valid_zone": { "x_min": 20, "x_max": 300 }
-    },
-    {
-      "id": 9,
-      "topic": "QRS",
-      "title": "QRS #3 - QRS ancho por taquicardia ventricular",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Marca el inicio y el final del QRS.",
-      "ms_per_pixel": 1.6,
-      "correct_ms": 180,
-      "tolerance_ms": 20,
-      "valid_zone": { "x_min": 20, "x_max": 300 }
-    },
+
 
     {
       "id": 10,
       "topic": "QT",
-      "title": "QT #1 - QT normal",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Marca el inicio del QRS y final de la T.",
+      "title": "QT #1",
+      "image": "ej_6.png",
+      "corrected_image": "ej_6_marked.png",
+      "instruction": "Marca el inicio y final del intervalo QT.",
       "ms_per_pixel": 1.6,
-      "correct_ms": 390,
-      "tolerance_ms": 25,
+      "correct_ms": 280,
+      "tolerance_ms": 20,
       "valid_zone": { "x_min": 20, "x_max": 600 }
     },
     {
       "id": 11,
       "topic": "QT",
       "title": "QT #2 - QT prolongado",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
+      "image": "ej_7.png",
+      "corrected_image": "ej_7_marked.png",
       "instruction": "Marca inicio QRS y final de T.",
       "ms_per_pixel": 1.6,
-      "correct_ms": 480,
-      "tolerance_ms": 25,
+      "correct_ms": 640,
+      "tolerance_ms": 10,
       "valid_zone": { "x_min": 20, "x_max": 700 }
-    },
-    {
-      "id": 12,
-      "topic": "QT",
-      "title": "QT #3 - QT corto",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Marca el inicio del QRS y el final de la onda T.",
-      "ms_per_pixel": 1.6,
-      "correct_ms": 300,
-      "tolerance_ms": 25,
-      "valid_zone": { "x_min": 20, "x_max": 500 }
     },
 
     {
@@ -157,30 +116,7 @@
       "tolerance_ms": 15,
       "valid_zone": { "x_min": 20, "x_max": 400 }
     },
-    {
-      "id": 14,
-      "topic": "EJE_QRS",
-      "title": "Eje QRS #2 - Desviación a la izquierda",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Determina el eje usando DI y aVF.",
-      "ms_per_pixel": 1.6,
-      "correct_ms": 45,
-      "tolerance_ms": 15,
-      "valid_zone": { "x_min": 20, "x_max": 500 }
-    },
-    {
-      "id": 15,
-      "topic": "EJE_QRS",
-      "title": "Eje QRS #3 - Desviación derecha",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Determina el eje frontal del QRS.",
-      "ms_per_pixel": 1.6,
-      "correct_ms": 110,
-      "tolerance_ms": 15,
-      "valid_zone": { "x_min": 20, "x_max": 500 }
-    },
+     
 
     {
       "id": 16,
@@ -194,32 +130,7 @@
       "tolerance_ms": 15,
       "valid_zone": { "x_min": 20, "x_max": 500 }
     },
-    {
-      "id": 17,
-      "topic": "EJE_T",
-      "title": "Eje T #2 - Invertido con desviación izquierda",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Mide la deflexión de T en DI y aVF.",
-      "ms_per_pixel": 1.6,
-      "correct_ms": -30,
-      "tolerance_ms": 15,
-      "valid_zone": { "x_min": 20, "x_max": 500 }
-    },
-    {
-      "id": 18,
-      "topic": "EJE_T",
-      "title": "Eje T #3 - Discordancia secundaria",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Determina el eje de T.",
-      "ms_per_pixel": 1.6,
-      "correct_ms": -70,
-      "tolerance_ms": 20,
-      "valid_zone": { "x_min": 20, "x_max": 500 }
-    },
-
-
+   
     {
       "id": 19,
       "topic": "EJE_P",
@@ -232,31 +143,7 @@
       "tolerance_ms": 15,
       "valid_zone": { "x_min": 20, "x_max": 500 }
     },
-    {
-      "id": 20,
-      "topic": "EJE_P",
-      "title": "Eje P #2 - Eje superior (negativo en aVF)",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Selecciona la deflexión de P.",
-      "ms_per_pixel": 1.6,
-      "correct_ms": -10,
-      "tolerance_ms": 15,
-      "valid_zone": { "x_min": 20, "x_max": 500 }
-    },
-    {
-      "id": 21,
-      "topic": "EJE_P",
-      "title": "Eje P #3 - P pulmonale (alta en inferior)",
-      "image": "ekg_sample.png",
-      "corrected_image": "ekg_sample_marked.png",
-      "instruction": "Determina el eje frontal de la onda P.",
-      "ms_per_pixel": 1.6,
-      "correct_ms": 70,
-      "tolerance_ms": 15,
-      "valid_zone": { "x_min": 20, "x_max": 500 }
-    },
-
+    
    
     {
       "id": 22,
@@ -364,24 +251,32 @@
   "open": [
     {
       "id": 201,
-      "image": "ekg_sample.png",
+      "image": "ej_normal.png",
       "question": "Describe el diagnóstico más probable del ritmo.",
-      "correct_diagnosis": "Fibrilación Auricular",
-      "key_features": "Ausencia de ondas P, RR irregular, QRS estrechos."
+      "correct_diagnosis": ["Ritmo Sinusal", "ritmo sinusal", "Sinusal", "sinusal", "Ritmo sinusal"],
+      "key_features": "P antes de cada QRS, frecuencia 60-100 lpm, PR constante, QRS estrecho."
     },
     {
       "id": 202,
-      "image": "ekg_sample.png",
-      "question": "Identifica la arritmia presente en este ECG.",
-      "correct_diagnosis": "Taquicardia Ventricular",
-      "key_features": "QRS ancho, ritmo regular, frecuencia >100 bpm."
+      "image": "ej_fibrilacion.png",
+      "question": "Describe el diagnóstico más probable del ritmo.",
+      "correct_diagnosis": ["Fibrilación Auricular", "fibrilación auricular", "Fibrilacion auricular", "fibrilacion auricular", "FA", "fa"],
+      "key_features": "Ausencia de ondas P, RR irregular, QRS estrechos."
     },
     {
       "id": 203,
-      "image": "ekg_sample.png",
-      "question": "¿Cuál es la interpretación del segmento ST en este ECG?",
-      "correct_diagnosis": "Elevación del ST",
-      "key_features": "Elevación >1 mm en dos derivaciones contiguas."
+      "image": "ej_bloqueo.png",
+      "question": "¿Cuál es el diagnóstico más probable del ritmo",
+      "correct_diagnosis": ["Bloqueo de rama derecha", "bloqueo de rama derecha", "BRD", "brd"],
+      "key_features": "QRS ancho >120 ms, patrón rsR' en V1, S ancha en V6, eje normal."
+    },
+    {
+      "id": 204,
+      "image": "ej_reentrada_nodal.png",
+      "question": "¿Cuál es el diagnóstico más probable del ritmo",
+      "correct_diagnosis": ["Taquicardia por reentrada nodal", "taquicardia por reentrada nodal", "AVNRT", "avnrt"],
+      "key_features": "Taquicardia regular a 150-250 lpm, QRS estrecho, ondas P retrógradas ocultas o después del QRS."
+      
     }
   ]
 }
