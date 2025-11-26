@@ -193,7 +193,7 @@ def render_open_all(open_list, api_key):
 
                 # Cambiar a modo feedback Y RECARGAR
                 st.session_state[status_key] = "feedback"
-                st.experimental_rerun()  # <--- ESTA ES LA CLAVE
+                st.rerun()  # <--- ESTA ES LA CLAVE
 
     # ===========================================================
     #     FASE 2 — RETROALIMENTACIÓN + SIGUIENTE CASO
